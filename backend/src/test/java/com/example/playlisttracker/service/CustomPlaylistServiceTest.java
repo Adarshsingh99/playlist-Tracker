@@ -86,6 +86,30 @@ class CustomPlaylistServiceTest {
     }
 
     @Test
+    void testAddLiveStreamVideo_Success() {
+        when(customPlaylistRepository.findByIdAndAnonymousUserId(playlistId, userId))
+                .thenReturn(Optional.of(mockPlaylist));
+        when(youTubeService.fetchSingleVideo("ZXecfxetJlM")).thenReturn(
+                Video.builder()
+                        .videoId("ZXecfxetJlM")
+                        .title("Java Live Stream")
+                        .thumbnail("thumb.jpg")
+                        .duration("1:30:00")
+                        .build()
+        );
+        when(customPlaylistRepository.save(any(CustomPlaylist.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        AddContentResponse response = customPlaylistService.addContent(
+                userId, playlistId, "https://www.youtube.com/live/ZXecfxetJlM?si=p3KJCKAv-XMsOaiV");
+
+        assertNotNull(response);
+        assertEquals("VIDEO", response.getContentType());
+        assertEquals(1, response.getAddedCount());
+        assertEquals("ZXecfxetJlM", response.getPlaylist().getVideos().get(0).getVideoId());
+    }
+
+    @Test
     void testAddSingleVideo_DuplicatePrevention() {
         // Pre-populate with vid123
         mockPlaylist.getVideos().add(CustomVideo.builder()

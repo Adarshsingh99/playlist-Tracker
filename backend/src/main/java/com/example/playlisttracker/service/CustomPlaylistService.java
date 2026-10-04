@@ -36,6 +36,9 @@ public class CustomPlaylistService {
     private static final Pattern EMBED_PATTERN = Pattern.compile(
             "(?:youtube\\.com/embed/)([a-zA-Z0-9_-]+)", Pattern.CASE_INSENSITIVE
     );
+    private static final Pattern LIVE_PATTERN = Pattern.compile(
+            "(?:youtube\\.com/live/)([a-zA-Z0-9_-]+)", Pattern.CASE_INSENSITIVE
+    );
     private static final Pattern GENERIC_LIST_PATTERN = Pattern.compile(
             "(?:[?&]list=)([a-zA-Z0-9_-]+)", Pattern.CASE_INSENSITIVE
     );
@@ -287,7 +290,13 @@ public class CustomPlaylistService {
             return new ContentTarget(TargetType.VIDEO, embedMatcher.group(1));
         }
 
-        // 6. Generic list param fallback (if someone pasted a URL that only has list=...)
+        // 6. Live URL e.g. youtube.com/live/VIDEO_ID
+        Matcher liveMatcher = LIVE_PATTERN.matcher(url);
+        if (liveMatcher.find()) {
+            return new ContentTarget(TargetType.VIDEO, liveMatcher.group(1));
+        }
+
+        // 7. Generic list param fallback (if someone pasted a URL that only has list=...)
         Matcher genericListMatcher = GENERIC_LIST_PATTERN.matcher(url);
         if (genericListMatcher.find()) {
             return new ContentTarget(TargetType.PLAYLIST, genericListMatcher.group(1));
