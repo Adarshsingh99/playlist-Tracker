@@ -1,0 +1,26 @@
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Backend secrets
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-prod.properties
+
+# Build artifacts
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
